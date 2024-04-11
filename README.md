@@ -1,25 +1,44 @@
-# Generating Equirectangular Images
+# Generating Equirectangular / Cube Map Images
 
 In time, this will become a collection of scripts to convert to and from equirectangular images and cube maps.
 
 A more detailed explanation of how the script works can be found on my website, [www.paul-reed.co.uk/programming.htm](http://www.paul-reed.co.uk/programming.html)
 
-### Equirectangular from individual cube map files
+## Python
+### Example
+- Equirectangular → Cube map
+``` $bash
+python3 createEquiFromSquareFiles.py raw_data/PIC_1.jpg
+```
 
-![Output Image](http://www.paul-reed.co.uk/images/fortPoint_Equi.png)
+- Cube map →　Equirectangular
+``` $bash
+python3 CubemapFromEqui.py raw_data/PIC_1.jpg
+```
 
-Prior to using this script you will need to install [Python Imaging Library - PIL](http://www.pythonware.com/products/pil/). Once installed, copy the createEquiFromSquareFiles.py file to your computer. Open up either terminal, or command prompt and then run the following command replacing the file path with a path to the folder containing the six cube map images on your computer:
+## C++
+### Usage
+- Equirectangular → Cube map
+``` $bash
+./equi2cube <file_path>
+```
 
-    python createEquiFromSquareFiles.py "/Users/paulreed/Dropbox/Virtual Reality/GitHub/"
-    
-Once complete the script will save an equirectangular image in the folder containing the six cube map images.
+- Cube map →　Equirectangular
+``` $bash
+./equi2cube <file_name>
+```
 
-#### Licences
 
-Cube map images used as the example inputs are the work of Emil Persson, aka Humus [http://www.humus.name] under a Creative Commons Attribution 3.0 Unported License. [http://creativecommons.org/licenses/by/3.0/]
+### Example
+- Equirectangular → Cube map
+``` $bash
+/usr/local/cuda-11.6/bin/nvcc -O3 equi2cube.cu `pkg-config opencv4 --cflags --libs` -o equi2cube
+./equi2cube ./raw_data/PIC_4.jpg
+```
 
-/usr/local/cuda-11.6/bin/nvcc -O3 equi_to_cube.cu `pkg-config opencv4 --cflags --libs` -o equi_to_cube
-./equi_to_cube ./raw_data/PIC_4.jpg
+- Cube map →　Equirectangular
+``` $bash
+/usr/local/cuda-11.6/bin/nvcc -O3 cube2equi.cu `pkg-config opencv4 --cflags --libs` -o cube2equi
+./cube2equi PIC_4
+```
 
-/usr/local/cuda-11.6/bin/nvcc -O3 cube_to_equi.cu `pkg-config opencv4 --cflags --libs` -o cube_to_equi
-./cube_to_equi ./raw_data/PIC_4
