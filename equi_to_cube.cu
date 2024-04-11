@@ -110,40 +110,63 @@ int divUp(int a, int b)
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " <input_image>" << endl;
+        cerr << "Usage: " << argv[0] << " <inputImage>" << endl;
         return 1;
     }
 
-    Mat input = imread(argv[1]);
-    if (input.empty()) {
-        cerr << "Error: Couldn't open the input image!" << endl;
+    string inputPath = argv[1];
+    Mat inputImage = imread(inputPath);
+
+    if (inputImage.empty()) {
+        cerr << "Error: Couldn't open the inputImage image!" << endl;
         return 1;
     }
 
-    int inputWidth = input.cols;
-    int inputHeight = input.rows;
+    size_t lastSlash = inputPath.find_last_of("/");
+    string fileName = inputPath.substr(lastSlash + 1);
+    cout << "Processing " << fileName << "..." << endl;
+
+    int inputWidth = inputImage.cols;
+    int inputHeight = inputImage.rows;
     float sqr = inputWidth / 4.0f;
     int outputWidth = sqr * 3;
     int outputHeight = sqr * 2;
 
-    // Upload input image to GPU
+    // Upload inputImage image to GPU
     cv::cuda::GpuMat d_input;
-    d_input.upload(input);
+    d_input.upload(inputImage);
 
     // Create output GPU matrix
     cv::cuda::GpuMat d_output(outputHeight, outputWidth, CV_8UC3);
 
     // Launch kernel
     dim3 block(16, 16);
-    dim3 grid(divUp(input.cols, block.x), divUp(input.rows, block.y));
+    dim3 grid(divUp(inputImage.cols, block.x), divUp(inputImage.rows, block.y));
     equirectangularToCubeMap<<<grid, block>>>(d_input, d_output, inputWidth, inputHeight, outputWidth, outputHeight);
 
     // Download output from GPU
     Mat output;
     d_output.download(output);
 
-    // Save output image
-    imwrite("cube_map_output.png", output);
+    int faceWidth = outputWidth / 3;
+    int faceHeight = outputHeight / 2;
+
+    // Split the output into six different images
+    Mat face1 = output(Rect(0, 0, faceWidth, faceHeight));
+    Mat face2 = output(Rect(faceWidth, 0, faceWidth, faceHeight));
+    Mat face3 = output(Rect(2 * faceWidth, 0, faceWidth, faceHeight));
+    Mat face4 = output(Rect(0, faceHeight, faceWidth, faceHeight));
+    Mat face5 = output(Rect(faceWidth, faceHeight, faceWidth, faceHeight));
+    Mat face6 = output(Rect(2 * faceWidth, faceHeight, faceWidth, faceHeight));
+
+    // Save output images
+    imwrite("output/cube/merged_" + fileName, output);
+    imwrite("output/cube/1_splitted_" + fileName, face1);
+    imwrite("output/cube/2_splitted_" + fileName, face2);
+    imwrite("output/cube/3_splitted_" + fileName, face3);
+    imwrite("output/cube/4_splitted_" + fileName, face4);
+    imwrite("output/cube/5_splitted_" + fileName, face5);
+    imwrite("output/cube/6_splitted_" + fileName, face6);
 
     return 0;
 }
