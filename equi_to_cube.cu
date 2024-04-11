@@ -124,6 +124,7 @@ int main(int argc, char** argv) {
 
     size_t lastSlash = inputPath.find_last_of("/");
     string fileName = inputPath.substr(lastSlash + 1);
+    fileName = fileName.substr(0, fileName.find_last_of("."));
     cout << "Processing " << fileName << "..." << endl;
 
     int inputWidth = inputImage.cols;
@@ -160,13 +161,15 @@ int main(int argc, char** argv) {
     Mat face6 = output(Rect(2 * faceWidth, faceHeight, faceWidth, faceHeight));
 
     // Save output images
-    imwrite("output/cube/merged_" + fileName, output);
-    imwrite("output/cube/1_splitted_" + fileName, face1);
-    imwrite("output/cube/2_splitted_" + fileName, face2);
-    imwrite("output/cube/3_splitted_" + fileName, face3);
-    imwrite("output/cube/4_splitted_" + fileName, face4);
-    imwrite("output/cube/5_splitted_" + fileName, face5);
-    imwrite("output/cube/6_splitted_" + fileName, face6);
+    imwrite("output/cube/" + fileName + "_cube.jpg", output);
+    imwrite("output/cube/" + fileName + "_negx.jpg", face1);
+    imwrite("output/cube/" + fileName + "_posz.jpg", face2);
+
+    imwrite("output/cube/" + fileName + "_posx.jpg", face3);
+    imwrite("output/cube/" + fileName + "_negz.jpg", face4);
+
+    imwrite("output/cube/" + fileName + "_negy.jpg", face5);
+    imwrite("output/cube/" + fileName + "_posy.jpg", face6);
 
     return 0;
 }

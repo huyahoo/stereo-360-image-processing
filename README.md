@@ -19,4 +19,7 @@ Once complete the script will save an equirectangular image in the folder contai
 Cube map images used as the example inputs are the work of Emil Persson, aka Humus [http://www.humus.name] under a Creative Commons Attribution 3.0 Unported License. [http://creativecommons.org/licenses/by/3.0/]
 
 /usr/local/cuda-11.6/bin/nvcc -O3 equi_to_cube.cu `pkg-config opencv4 --cflags --libs` -o equi_to_cube
-./equi_to_cube ./raw_data/PIC_1.jpg
+./equi_to_cube ./raw_data/PIC_4.jpg
+
+/usr/local/cuda-11.6/bin/nvcc -O3 cube_to_equi.cu `pkg-config opencv4 --cflags --libs` -o cube_to_equi
+./cube_to_equi ./raw_data/PIC_4
