@@ -107,11 +107,18 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    cv::Mat input_img = cv::imread(argv[1], cv::IMREAD_COLOR);
+    string inputPath = argv[1];
+    size_t lastSlash = inputPath.find_last_of("/");
+    string fileName = inputPath.substr(lastSlash + 1);
+    fileName = fileName.substr(0, fileName.find_last_of("."));
+
+    cv::Mat input_img = cv::imread(inputPath, cv::IMREAD_COLOR);
     if (input_img.empty()) {
         cerr << "Error: Unable to load image." << endl;
         return -1;
     }
+
+    cout << "Denoising " << fileName << "..." << endl;
 
     int neighborhoodSize = atoi(argv[2]);
     double factorRatio = atof(argv[3]);
@@ -166,7 +173,7 @@ int main(int argc, char** argv) {
     // cv::imshow("Denoised Image", denoised_image);
 
     // Save the anaglyph image
-    std::string filename =  "output/denoised/denoised-cuda.jpg";
+    std::string filename =  "output/cube/denoised_" + fileName + ".jpg";
     cv::imwrite(filename, denoised_image);
 
     // cv::waitKey();
