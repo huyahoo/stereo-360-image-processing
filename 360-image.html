@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://www.couleur.org/JS-Web/Sprint2024/image-360.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>three.js webgl - equirectangular panorama</title>
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+			}
+		</style>	
+	</head>
+	<body data-new-gr-c-s-check-loaded="14.1166.0" data-gr-ext-installed="">
+
+		<div id="container" style="touch-action: none;"><canvas data-engine="three.js r163" width="3222" height="1876" style="display: block; width: 1611px; height: 938px;"></canvas></div>
+	
+		<script async="" src="./360-image_files/es-module-shims.js"></script>
+		<script type="importmap">
+		  {
+			"imports": {
+			  "three": "https://unpkg.com/three@0.163.0/build/three.module.js",
+			  "three/addons/": "https://unpkg.com/three@0.163.0/examples/jsm/"
+			}
+		  }
+		</script>
+	
+	  <script type="module">
+		import * as THREE from 'three';
+		
+			let camera, scene, renderer;
+
+			let isUserInteracting = false,
+				onPointerDownMouseX = 0, onPointerDownMouseY = 0,
+				lon = 0, onPointerDownLon = 0,
+				lat = 0, onPointerDownLat = 0,
+				phi = 0, theta = 0;
+
+			init();
+			animate();
+
+			function init() {
+				const container = document.getElementById( 'container' );
+
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
+
+				scene = new THREE.Scene();
+
+				const geometry = new THREE.SphereGeometry( 500, 60, 40 );
+				// invert the geometry on the x-axis so that all of the faces point inward
+				geometry.scale( - 1, 1, 1 );
+
+		const texture = new THREE.TextureLoader().load( './output/equirectangular/PIC_4_EQUIRECTANGULAR.png' );
+				const material = new THREE.MeshBasicMaterial( { map: texture } );
+
+				const mesh = new THREE.Mesh( geometry, material );
+
+				scene.add( mesh );
+
+		renderer = new THREE.WebGLRenderer();
+		
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				container.style.touchAction = 'none';
+
+				container.addEventListener( 'pointerdown', onPointerDown );
+				document.addEventListener( 'wheel', onDocumentMouseWheel );
+				window.addEventListener( 'resize', onWindowResize );
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function onPointerDown( event ) {
+				if ( event.isPrimary === false ) return;
+
+				isUserInteracting = true;
+
+				onPointerDownMouseX = event.clientX;
+				onPointerDownMouseY = event.clientY;
+
+				onPointerDownLon = lon;
+				onPointerDownLat = lat;
+
+				document.addEventListener( 'pointermove', onPointerMove );
+				document.addEventListener( 'pointerup', onPointerUp );
+			}
+
+			function onPointerMove( event ) {
+				if ( event.isPrimary === false ) return;
+
+				lon = ( onPointerDownMouseX - event.clientX ) * 0.1 + onPointerDownLon;
+				lat = ( event.clientY - onPointerDownMouseY ) * 0.1 + onPointerDownLat;
+			}
+
+			function onPointerUp() {
+				if ( event.isPrimary === false ) return;
+
+				isUserInteracting = false;
+
+				document.removeEventListener( 'pointermove', onPointerMove );
+				document.removeEventListener( 'pointerup', onPointerUp );
+			}
+
+			function onDocumentMouseWheel( event ) {
+				const fov = camera.fov + event.deltaY * 0.05;
+				camera.fov = THREE.MathUtils.clamp( fov, 10, 75 );
+				camera.updateProjectionMatrix();
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				update();
+			}
+
+			function update() {
+				lat = Math.max( - 85, Math.min( 85, lat ) );
+				phi = THREE.MathUtils.degToRad( 90 - lat );
+				theta = THREE.MathUtils.degToRad( lon );
+
+				const x = 500 * Math.sin( phi ) * Math.cos( theta );
+				const y = 500 * Math.cos( phi );
+				const z = 500 * Math.sin( phi ) * Math.sin( theta );
+
+				camera.lookAt( x, y, z );
+				renderer.render( scene, camera );
+			}
+
+		</script>
+	
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>
