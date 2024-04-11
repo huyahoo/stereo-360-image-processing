@@ -42,3 +42,17 @@ python3 CubemapFromEqui.py raw_data/PIC_1.jpg
 ./cube2equi PIC_4
 ```
 
+### Denoise
+- Denoise utilizing CUDA
+``` $bash
+/usr/local/cuda-11.6/bin/nvcc -O3 denoise-cuda.cu `pkg-config opencv4 --cflags --libs` -o denoise-cuda
+./denoise-cuda ./output/cube/PIC_4_CUBE.jpg 5 1
+```
+
+- Denoise utilizing OPEN OMP
+``` $bash
+g++ denoise-omp.cpp -fopenmp `pkg-config opencv4 --cflags` -c
+g++ denoise-omp.o  -fopenmp `pkg-config opencv4 --libs` -lstdc++ -o denoise-omp
+./denoise-omp ./output/cube/PIC_4_CUBE.jpg 5 1
+```
+
