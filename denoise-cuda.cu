@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
     // cv::imshow("Denoised Image", denoised_image);
 
     // Save the anaglyph image
-    std::string filename =  "output/cube/denoised_" + fileName + ".jpg";
+    std::string filename =  "output/denoised/" + fileName + ".jpg";
     cv::imwrite(filename, denoised_image);
 
     // cv::waitKey();

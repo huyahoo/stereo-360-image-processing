@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
     }
 
     string fileName = argv[1];
-    string prefix = "./output/cube/" + fileName;
+    string prefix = "./output/denoised/" + fileName;
 
     cout << "Processing " << fileName << "..." << endl;
 
