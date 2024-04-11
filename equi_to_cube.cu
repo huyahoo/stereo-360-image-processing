@@ -26,99 +26,65 @@ __device__ float getTheta(float x, float y) {
 
 __global__ void equirectangularToCubeMap(const cv::cuda::PtrStepSz<uchar3> src, cv::cuda::PtrStepSz<uchar3> dst,
                                          int inputWidth, int inputHeight, int outputWidth, int outputHeight) {
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
+    int dst_x = blockIdx.x * blockDim.x + threadIdx.x;
+    int dst_y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x < outputWidth && y < outputHeight) {
+    if (dst_x < outputWidth && dst_y < outputHeight) {
         float sqr = inputWidth / 4.0f;
-        float outputX = x;
-        float outputY = y;
         float tx, ty, normTheta, normPhi;
-        float theta, phi;
         float tempX, tempY, tempZ;
 
-        if (outputY < sqr + 1) {
-            if (outputX < sqr + 1) {
-                tx = outputX;
-                ty = outputY;
+        if (dst_y < sqr + 1) {
+            if (dst_x < sqr + 1) {
+                tx = dst_x;
+                ty = dst_y;
                 tempX = tx - 0.5f * sqr;
                 tempY = 0.5f * sqr;
                 tempZ = ty - 0.5f * sqr;
-               
-            } else if (outputX < 2 * sqr + 1) {
+            } else if (dst_x < 2 * sqr + 1) {
                 // top middle [X+]
-                tx = outputX - sqr;
-                ty = outputY;
+                tx = dst_x - sqr;
+                ty = dst_y;
                 tempX = 0.5f * sqr;
                 tempY = (tx - 0.5f * sqr) * -1;
                 tempZ = ty - 0.5f * sqr;
-                // theta = getTheta(tempX, tempY);
-                // if (tempY < 0) {
-                //     theta = M_PI + theta;
-                // }
-                // phi = M_PI - acosf(tempZ / sqrtf(tempX * tempX + tempY * tempY + tempZ * tempZ));
             } else {
                 // top right [Y-]
-                tx = outputX - 2 * sqr;
-                ty = outputY;
+                tx = dst_x - 2 * sqr;
+                ty = dst_y;
                 tempX = (tx - 0.5f * sqr) * -1;
                 tempY = -0.5f * sqr;
                 tempZ = ty - 0.5f * sqr;
-                // theta = getTheta(tempX, tempY);
-                // if (tempY < 0) {
-                //     theta = M_PI + theta;
-                // }
-                // phi = M_PI - acosf(tempZ / sqrtf(tempX * tempX + tempY * tempY + tempZ * tempZ));
             }
         } else {
-            if (outputX < sqr + 1) {
+            if (dst_x < sqr + 1) {
                 // bottom left box [X-]
-                tx = outputX;
-                ty = outputY - sqr;
+                tx = dst_x;
+                ty = dst_y - sqr;
                 tempX = -0.5f * sqr;
                 tempY = tx - 0.5f * sqr;
                 tempZ = ty - 0.5f * sqr;
-                // theta = getTheta(tempX, tempY);
-                // if (tempY < 0) {
-                //     theta = M_PI + theta;
-                // }
-                // phi = M_PI - acosf(tempZ / sqrtf(tempX * tempX + tempY * tempY + tempZ * tempZ));
-            } else if (outputX < 2 * sqr + 1) {
+            } else if (dst_x < 2 * sqr + 1) {
                 // bottom middle [Z-]
-                tx = outputX - sqr;
-                ty = outputY - sqr;
+                tx = dst_x - sqr;
+                ty = dst_y - sqr;
                 tempX = (ty - 0.5f * sqr) * -1;
                 tempY = (tx - 0.5f * sqr) * -1;
                 tempZ = 0.5f * sqr;
-                // theta = getTheta(tempX, tempY);
-                // if (tempY < 0) {
-                //     theta = M_PI + theta;
-                // }
-                // phi = M_PI - acosf(tempZ / sqrtf(tempX * tempX + tempY * tempY + tempZ * tempZ));
             } else {
                 // bottom right [Z+]
-                tx = outputX - 2 * sqr;
-                ty = outputY - sqr;
+                tx = dst_x - 2 * sqr;
+                ty = dst_y - sqr;
                 tempX = ty - 0.5f * sqr;
                 tempY = (tx - 0.5f * sqr) * -1;
                 tempZ = -0.5f * sqr;
-                // theta = getTheta(tempX, tempY);
-                // if (tempY < 0) {
-                //     theta = M_PI + theta;
-                // }
-                // phi = M_PI - acosf(tempZ / sqrtf(tempX * tempX + tempY * tempY + tempZ * tempZ));
             }
         }
 
         // Normalize theta and phi
         float rho = sqrtf(tempX * tempX + tempY * tempY + tempZ * tempZ);
-        theta = getTheta(tempX, tempY);
-        // if (tempY < 0) {
-        //     theta = M_PI + theta;
-        // }
-        phi = M_PI - acosf(tempZ / rho);
-        normTheta = theta / (2 * M_PI);
-        normPhi = phi / M_PI;
+        normTheta = getTheta(tempX, tempY) / (2 * M_PI);
+        normPhi = (M_PI - acosf(tempZ / rho)) / M_PI;
 
         // Calculate input coordinates
         float iX = normTheta * inputWidth;
@@ -133,7 +99,7 @@ __global__ void equirectangularToCubeMap(const cv::cuda::PtrStepSz<uchar3> src, 
         }
 
         // Copy pixel value from input to output
-        dst(y, x) = src((int)iY, (int)iX);
+        dst(dst_y, dst_x) = src((int)iY, (int)iX);
     }
 }
 
