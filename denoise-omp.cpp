@@ -44,7 +44,6 @@ cv::Mat denoiseByCovariance(const cv::Mat& src, int neighborhoodSize, double fac
             kernelSize |= 1; // Ensure it's odd
 
             cv::GaussianBlur(src(cv::Rect(x, y, 1, 1)), dst(cv::Rect(x, y, 1, 1)), cv::Size(kernelSize, kernelSize), 0, 0);
-
         }
     }
 
@@ -58,14 +57,21 @@ int main( int argc, char** argv )
         return -1;
     }
 
+    string inputPath = argv[1];
+
     // Read the stereo image
-    cv::Mat stereo_image = cv::imread(argv[1], cv::IMREAD_COLOR);
+    cv::Mat stereo_image = cv::imread(inputPath, cv::IMREAD_COLOR);
 
     // Check if the image is loaded successfully
     if (stereo_image.empty()) {
         cerr << "Error: Unable to load image." << endl;
         return -1;
     }
+
+    size_t lastSlash = inputPath.find_last_of("/");
+    string fileName = inputPath.substr(lastSlash + 1);
+    fileName = fileName.substr(0, fileName.find_last_of("."));
+    cout << "Denoising " << fileName << "..." << endl;
 
     int neighborhoodSize = atoi(argv[2]);
     double factorRatio = atof(argv[3]);
@@ -112,7 +118,7 @@ int main( int argc, char** argv )
     // cv::imshow("Denoised Image", denoisedImage);
 
     // Save the anaglyph image
-    std::string filename =  "output/denoised/denoised-omp.jpg";
+    std::string filename =  "output/denoised/" + fileName + ".jpg";
     cv::imwrite(filename, denoisedImage);
 
     // Display performance metrics

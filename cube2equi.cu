@@ -102,6 +102,7 @@ __global__ void convertEquirectUVtoUnit2D(cuda::PtrStepSz<uchar3> posx, cuda::Pt
             case 4: color = posz(yPixel, xPixel); break;
             case 5: color = negz(yPixel, xPixel); break;
         }
+
         output(y, x) = color;
     }
 }

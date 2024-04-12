@@ -8,12 +8,12 @@ A more detailed explanation of how the script works can be found on my website, 
 ### Example
 - Equirectangular → Cube map
 ``` $bash
-python3 createEquiFromSquareFiles.py raw_data/PIC_1.jpg
+python3 CubemapFromEqui.py raw_data/PIC_1.jpg
 ```
 
 - Cube map →　Equirectangular
 ``` $bash
-python3 CubemapFromEqui.py raw_data/PIC_1.jpg
+python3 createEquiFromSquareFiles.py ./output/denoised/PIC_4_
 ```
 
 ## C++
@@ -46,13 +46,25 @@ python3 CubemapFromEqui.py raw_data/PIC_1.jpg
 - Denoise utilizing CUDA
 ``` $bash
 /usr/local/cuda-11.6/bin/nvcc -O3 denoise-cuda.cu `pkg-config opencv4 --cflags --libs` -o denoise-cuda
-./denoise-cuda ./output/cube/PIC_4_CUBE.jpg 5 1
+./denoise-cuda ./output/cube/PIC_4_negx.jpg 5 1
+./denoise-cuda ./output/cube/PIC_4_negy.jpg 5 1
+./denoise-cuda ./output/cube/PIC_4_negz.jpg 5 1
+./denoise-cuda ./output/cube/PIC_4_posx.jpg 5 1
+./denoise-cuda ./output/cube/PIC_4_posy.jpg 5 1
+./denoise-cuda ./output/cube/PIC_4_posz.jpg 5 1
+
+
 ```
 
 - Denoise utilizing OPEN OMP
 ``` $bash
 g++ denoise-omp.cpp -fopenmp `pkg-config opencv4 --cflags` -c
 g++ denoise-omp.o  -fopenmp `pkg-config opencv4 --libs` -lstdc++ -o denoise-omp
-./denoise-omp ./output/cube/PIC_4_CUBE.jpg 5 1
+./denoise-omp ./output/cube/PIC_4_negx.jpg 3 3
+./denoise-omp ./output/cube/PIC_4_negy.jpg 3 3
+./denoise-omp ./output/cube/PIC_4_negz.jpg 3 3
+./denoise-omp ./output/cube/PIC_4_posx.jpg 3 3
+./denoise-omp ./output/cube/PIC_4_posy.jpg 3 3
+./denoise-omp ./output/cube/PIC_4_posz.jpg 3 3
 ```
 

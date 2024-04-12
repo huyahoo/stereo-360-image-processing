@@ -19,12 +19,12 @@ filePath = sys.argv[1]
 # Y -> X
 # Z -> Y
 
-posx = Image.open(filePath+"posz.jpg")
-negx = Image.open(filePath+"negz.jpg")
-posy = Image.open(filePath+"posx.jpg")
-negy = Image.open(filePath+"negx.jpg")
-posz = Image.open(filePath+"posy.jpg")
-negz = Image.open(filePath+"negy.jpg")
+posx = Image.open(filePath+"posx.jpg")
+negx = Image.open(filePath+"negx.jpg")
+posy = Image.open(filePath+"posy.jpg")
+negy = Image.open(filePath+"negy.jpg")
+posz = Image.open(filePath+"posz.jpg")
+negz = Image.open(filePath+"negz.jpg")
 
 squareLength = posx.size[0]
 halfSquareLength = squareLength/2

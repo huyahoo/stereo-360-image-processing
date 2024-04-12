@@ -108,9 +108,6 @@ int main(int argc, char** argv) {
     }
 
     string inputPath = argv[1];
-    size_t lastSlash = inputPath.find_last_of("/");
-    string fileName = inputPath.substr(lastSlash + 1);
-    fileName = fileName.substr(0, fileName.find_last_of("."));
 
     cv::Mat input_img = cv::imread(inputPath, cv::IMREAD_COLOR);
     if (input_img.empty()) {
@@ -118,6 +115,9 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    size_t lastSlash = inputPath.find_last_of("/");
+    string fileName = inputPath.substr(lastSlash + 1);
+    fileName = fileName.substr(0, fileName.find_last_of("."));
     cout << "Denoising " << fileName << "..." << endl;
 
     int neighborhoodSize = atoi(argv[2]);
